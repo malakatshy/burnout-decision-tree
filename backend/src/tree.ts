@@ -1,5 +1,5 @@
 
-import type { Outcome, TrainingRow, Sample } from "./types";
+import type { Outcome, TrainingRow, Sample, TreeNode } from "./types";
 import { dataset } from "./dataset";
 
 
@@ -95,3 +95,106 @@ export function findBestSplit(rows: TrainingRow[]): Split | null {
   return best;
 }
 
+
+
+// Counts how many rows fall into each outcome.
+//  leaf's prediction + "hover stats" 
+function countByOutcome(rows: TrainingRow[]): Record<Outcome, number> {
+  const counts: Record<Outcome, number> = {
+    "Healthy": 0,
+    "Risk of burnout": 0,
+    "Vacation required": 0,
+    "Critical condition": 0,
+  };
+
+  for (const row of rows) 
+    counts[row.outcome]++;
+  return counts;
+}
+
+// Picks the most common outcome — used when a leaf isn't perfectly pure.
+function majorityOutcome(rows: TrainingRow[]): Outcome {
+  const counts = countByOutcome(rows);
+  let best: Outcome = "Healthy";
+  let bestCount = -1;
+  for (const outcome of Object.keys(counts) as Outcome[]) {
+    if (counts[outcome] > bestCount) {
+      bestCount = counts[outcome];
+      best = outcome;
+    }
+  }
+  return best;
+}
+
+
+//Tree
+
+export function buildTree(rows: TrainingRow[], depth: number = 0): TreeNode {
+  const distribution = countByOutcome(rows);
+  const samples = rows.length;
+
+  //Base cases
+  const uniqueOutcomes = new Set(rows.map((r) => r.outcome));
+  if (uniqueOutcomes.size === 1) {
+    return { kind: "leaf", prediction: rows[0]!.outcome, samples, distribution };
+  }
+
+  if (samples < 2 || depth >= 5) {
+    return { kind: "leaf", prediction: majorityOutcome(rows), samples, distribution };
+  }
+
+  //Recursive case
+  const split = findBestSplit(rows);
+
+  // Safety: if no useful split exists, fall back to a leaf.
+  if (split === null || split.gain === 0) {
+    return { kind: "leaf", prediction: majorityOutcome(rows), samples, distribution };
+  }
+
+  return {
+    kind: "decision",
+    feature: split.feature,
+    threshold: split.threshold,
+    samples,
+    distribution,
+    left:  buildTree(split.left,  depth + 1),   // ← recursive call
+    right: buildTree(split.right, depth + 1),   // ← recursive call
+  };
+}
+
+
+
+
+
+// Walks the tree for one person's stats and returns the predicted outcome.
+export function predict(node: TreeNode, sample: Sample): Outcome {
+  // Base case: reached a leaf → that's the answer.
+  if (node.kind === "leaf") {
+    return node.prediction;
+  }
+
+  // Decision node: check its condition on this person's value.
+  const value = sample[node.feature];
+  const goesLeft =
+    typeof value === "number" // number ?
+      ? value < (node.threshold as number)   // numeric: left = value < threshold
+      : value === node.threshold;             // categorical: left = value === threshold
+
+  // Move to the matching side and repeat.
+  return goesLeft
+    ? predict(node.left, sample)    
+    : predict(node.right, sample);
+}
+
+
+
+const tree = buildTree(dataset);
+
+const sample: Sample = {
+  sleep: 10,
+  meetings: 8,
+  weekends: "Yes",
+  stress: 9,
+};
+
+console.log("Prediction:", predict(tree, sample));
