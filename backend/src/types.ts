@@ -22,15 +22,15 @@ export type TreeNode =
   | {
       kind: "leaf";
       prediction: Outcome;
-      samples: number;                         // how many training rows reached here
-      distribution: Record<Outcome, number>;   // class counts (this powers the hover stats)
+      samples: number;                        
+      distribution: Record<Outcome, number>;  
     }
   | {
       kind: "decision";
-      feature: keyof Sample;                    // which feature is tested
-      threshold: number | string;              // numeric cutoff, or "Yes"/"No" for categorical
+      feature: keyof Sample;                   
+      threshold: number | string;              
       samples: number;
       distribution: Record<Outcome, number>;
-      left: TreeNode;                           // rows where the condition is TRUE
-      right: TreeNode;                          // rows where it's FALSE
-    };
+      left: TreeNode;                           
+      right: TreeNode;                        
+    }; 

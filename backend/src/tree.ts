@@ -3,6 +3,7 @@ import type { Outcome, TrainingRow, Sample, TreeNode } from "./types";
 import { dataset } from "./dataset";
 
 
+////////////////////////////////////////////////////
 export function gini(rows: TrainingRow[]): number {
 
 if (rows.length === 0) return 0; 
@@ -22,8 +23,8 @@ let sumOfSquares = 0;
   return 1 - sumOfSquares;
 }
 
-
 ////////////////////////////////////////////////////
+
 
 
 // Object describing a split of the dataset into two halves.
@@ -51,16 +52,23 @@ function partition(rows: TrainingRow[], feature: keyof Sample, threshold: number
   }
   return [left, right];
 }
+////////////////////////////////////////////////////
 
+
+
+
+//////////////////////////////////////////////////////////////////
 // Weighted impurity of a split: each side's Gini, weighted by its share of the rows.
 function weightedGini(left: TrainingRow[], right: TrainingRow[]): number {
   const total = left.length + right.length;
   return (left.length/total)*gini(left) + (right.length/total)*gini(right)
 }
+///////////////////////////////////////////////////////////
 
 
 
 
+/////////////////////////////////////////////////////////////
 // Tries every feature/threshold and returns the split with the highest information gain.
 export function findBestSplit(rows: TrainingRow[]): Split | null {
 
@@ -94,9 +102,12 @@ export function findBestSplit(rows: TrainingRow[]): Split | null {
 
   return best;
 }
+//////////////////////////////////////////////////////////////
 
 
 
+
+/////////////////////////////////////////////////////////
 // Counts how many rows fall into each outcome.
 //  leaf's prediction + "hover stats" 
 function countByOutcome(rows: TrainingRow[]): Record<Outcome, number> {
@@ -125,8 +136,10 @@ function majorityOutcome(rows: TrainingRow[]): Outcome {
   }
   return best;
 }
+//////////////////////////////////////////////////
 
 
+////////////////////////////////////////////
 //Tree
 
 export function buildTree(rows: TrainingRow[], depth: number = 0): TreeNode {
@@ -161,11 +174,11 @@ export function buildTree(rows: TrainingRow[], depth: number = 0): TreeNode {
     right: buildTree(split.right, depth + 1),   // ← recursive call
   };
 }
+//////////////////////////////////////////////////////////
 
 
 
-
-
+/////////////////////////////////////////////////////////////////////////
 // Walks the tree for one person's stats and returns the predicted outcome.
 export function predict(node: TreeNode, sample: Sample): Outcome {
   // Base case: reached a leaf → that's the answer.
@@ -185,16 +198,15 @@ export function predict(node: TreeNode, sample: Sample): Outcome {
     ? predict(node.left, sample)    
     : predict(node.right, sample);
 }
-
+///////////////////////////////////////////////////////////////////////
 
 
 const tree = buildTree(dataset);
 
 const sample: Sample = {
-  sleep: 10,
-  meetings: 8,
+  sleep: 5,
+  meetings: 9,
   weekends: "Yes",
   stress: 9,
 };
 
-console.log("Prediction:", predict(tree, sample));
