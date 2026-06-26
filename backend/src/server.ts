@@ -36,10 +36,10 @@ function isValidSample(body: any): boolean {
   return (
     typeof body.sleep === "number" &&
     body.sleep >= 0 &&
-    body.sleep <= 24 &&
+    body.sleep <= 12 &&
     typeof body.meetings === "number" &&
     body.meetings >= 0 &&
-    body.meetings <= 20 &&
+    body.meetings <= 15 &&
     (body.weekends === "Yes" || body.weekends === "No") &&
     typeof body.stress === "number" && body.stress >= 1 && body.stress <= 10
   );
@@ -56,7 +56,7 @@ app.post("/api/predict", (req, res) => {
   if (!isValidSample(req.body)) {
     return res.status(400).json({
       error:
-        "Invalid input. Expected: sleep 0-24, meetings 0-30, weekends Yes/No, stress 1-10.",
+        "Invalid input. Expected: sleep 0-12, meetings 0-15, weekends Yes/No, stress 1-10.",
     });
   }
 
