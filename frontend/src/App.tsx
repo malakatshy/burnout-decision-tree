@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import TreeVisualizer from "./components/TreeVisualizer";
 
 type Outcome =
   | "Healthy"
@@ -14,10 +15,10 @@ type PredictionResponse = {
 const API_URL = "http://localhost:3000/api";
 
 function App() {
-  const [sleep, setSleep] = useState(0);
-  const [meetings, setMeetings] = useState(0);
+  const [sleep, setSleep] = useState(7);
+  const [meetings, setMeetings] = useState(4);
   const [weekends, setWeekends] = useState(false);
-  const [stress, setStress] = useState(0);
+  const [stress, setStress] = useState(5);
 
   const [prediction, setPrediction] = useState<Outcome | null>(null);
   const [error, setError] = useState("");
@@ -152,6 +153,7 @@ function App() {
         {error && <div className="error">{error}</div>}
       </div>
     </section>
+    <TreeVisualizer />
   </main>
 );
 }
