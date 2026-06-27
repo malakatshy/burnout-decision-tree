@@ -1,64 +1,61 @@
-import type { TrainingRow } from "./types";
 
-export const dataset: TrainingRow[] = [
+import type { TrainingRow, Outcome } from "./types";
 
-  // Healthy
-  { sleep: 8.0, meetings: 2, weekends: "Yes", stress: 2, outcome: "Healthy" },
-  { sleep: 7.5, meetings: 4, weekends: "No", stress: 3, outcome: "Healthy" },
-  { sleep: 8.5, meetings: 6, weekends: "No", stress: 2, outcome: "Healthy" },
-  { sleep: 7.0, meetings: 5, weekends: "No", stress: 4, outcome: "Healthy" },
-  { sleep: 7.5, meetings: 3, weekends: "Yes", stress: 3, outcome: "Healthy" },
-  { sleep: 8.0, meetings: 7, weekends: "No", stress: 4, outcome: "Healthy" },
-  { sleep: 6.5, meetings: 3, weekends: "No", stress: 4, outcome: "Healthy" },
-  { sleep: 5.0, meetings: 4, weekends: "No", stress: 3, outcome: "Healthy" },
-  { sleep: 8.5, meetings: 4, weekends: "Yes", stress: 2, outcome: "Healthy" },
-  { sleep: 7.5, meetings: 8, weekends: "No", stress: 3, outcome: "Healthy" },
-  { sleep: 6.8, meetings: 5, weekends: "No", stress: 5, outcome: "Healthy" },
-  { sleep: 8.2, meetings: 2, weekends: "No", stress: 5, outcome: "Healthy" },
+// ---------------------------------------------------------------------------
+// Burnout scoring rule.
+// Instead of hand-labeling rows, we define ONE transparent formula that
+// combines all four features into a single "burnout score". This guarantees
+// every feature genuinely affects the outcome, so the tree has a real reason
+// to split on each one — including weekends and meetings.
+// ---------------------------------------------------------------------------
+function burnoutScore(
+  sleep: number,
+  meetings: number,
+  weekends: "Yes" | "No",
+  stress: number
+): number {
+  const stressLoad = stress;                            // 1–10, the main driver
+  const sleepDebt = Math.max(0, 8 - sleep) * 0.9;       // every hour below 8 adds load
+  const meetingLoad = Math.max(0, meetings - 4) * 0.4;  // meetings above 4 add load
+  const weekendPenalty = weekends === "Yes" ? 2 : 0;    // working weekends adds fixed load
 
-  // Risk of burnout
-  { sleep: 6.5, meetings: 5, weekends: "No", stress: 6, outcome: "Risk of burnout" },
-  { sleep: 6.0, meetings: 7, weekends: "Yes", stress: 6, outcome: "Risk of burnout" },
-  { sleep: 5.5, meetings: 4, weekends: "Yes", stress: 7, outcome: "Risk of burnout" },
-  { sleep: 6.5, meetings: 8, weekends: "No", stress: 5, outcome: "Risk of burnout" },
-  { sleep: 5.5, meetings: 6, weekends: "Yes", stress: 6, outcome: "Risk of burnout" },
-  { sleep: 6.0, meetings: 3, weekends: "No", stress: 7, outcome: "Risk of burnout" },
-  { sleep: 7.0, meetings: 9, weekends: "Yes", stress: 5, outcome: "Risk of burnout" },
-  { sleep: 5.8, meetings: 7, weekends: "No", stress: 6, outcome: "Risk of burnout" },
-  { sleep: 6.2, meetings: 10, weekends: "No", stress: 5, outcome: "Risk of burnout" },
-  { sleep: 5.0, meetings: 5, weekends: "No", stress: 7, outcome: "Risk of burnout" },
-  { sleep: 6.8, meetings: 6, weekends: "Yes", stress: 6, outcome: "Risk of burnout" },
-  { sleep: 5.7, meetings: 8, weekends: "Yes", stress: 7, outcome: "Risk of burnout" },
-  { sleep: 6.3, meetings: 4, weekends: "No", stress: 6, outcome: "Risk of burnout" },
+  return stressLoad + sleepDebt + meetingLoad + weekendPenalty;
+}
 
-  // Vacation required
-  { sleep: 7.0, meetings: 8, weekends: "Yes", stress: 8, outcome: "Vacation required" },
-  { sleep: 6.5, meetings: 9, weekends: "Yes", stress: 8, outcome: "Vacation required" },
-  { sleep: 5.5, meetings: 7, weekends: "Yes", stress: 9, outcome: "Vacation required" },
-  { sleep: 6.0, meetings: 10, weekends: "No", stress: 9, outcome: "Vacation required" },
-  { sleep: 5.0, meetings: 8, weekends: "Yes", stress: 8, outcome: "Vacation required" },
-  { sleep: 6.8, meetings: 11, weekends: "Yes", stress: 7, outcome: "Vacation required" },
-  { sleep: 5.8, meetings: 6, weekends: "Yes", stress: 9, outcome: "Vacation required" },
-  { sleep: 7.2, meetings: 10, weekends: "No", stress: 8, outcome: "Vacation required" },
-  { sleep: 6.0, meetings: 5, weekends: "Yes", stress: 8, outcome: "Vacation required" },
-  { sleep: 5.2, meetings: 9, weekends: "No", stress: 9, outcome: "Vacation required" },
-  { sleep: 6.5, meetings: 12, weekends: "Yes", stress: 8, outcome: "Vacation required" },
-  { sleep: 4.0, meetings: 10, weekends: "Yes", stress: 7, outcome: "Vacation required" },
+// Maps a burnout score to one of the four outcomes.
+function scoreToOutcome(score: number): Outcome {
+  if (score < 8) return "Healthy";
+  if (score < 11.5) return "Risk of burnout";
+  if (score < 14.5) return "Vacation required";
+  return "Critical condition";
+}
 
-  // Critical condition
-  { sleep: 4.0, meetings: 9, weekends: "Yes", stress: 10, outcome: "Critical condition" },
-  { sleep: 3.5, meetings: 6, weekends: "Yes", stress: 8, outcome: "Critical condition" },
-  { sleep: 4.5, meetings: 11, weekends: "Yes", stress: 9, outcome: "Critical condition" },
-  { sleep: 2.5, meetings: 3, weekends: "Yes", stress: 10, outcome: "Critical condition" },
-  { sleep: 3.0, meetings: 5, weekends: "No", stress: 9, outcome: "Critical condition" },
-  { sleep: 4.8, meetings: 8, weekends: "Yes", stress: 10, outcome: "Critical condition" },
-  { sleep: 3.8, meetings: 12, weekends: "Yes", stress: 9, outcome: "Critical condition" },
-  { sleep: 4.2, meetings: 4, weekends: "No", stress: 10, outcome: "Critical condition" },
-  { sleep: 2.8, meetings: 7, weekends: "Yes", stress: 8.5, outcome: "Critical condition" },
-  { sleep: 4.5, meetings: 10, weekends: "No", stress: 7, outcome: "Critical condition" },
-  { sleep: 3.2, meetings: 9, weekends: "Yes", stress: 10, outcome: "Critical condition" },
-  { sleep: 4.0, meetings: 6, weekends: "Yes", stress: 9, outcome: "Critical condition" },
-  { sleep: 5.0, meetings: 11, weekends: "Yes", stress: 9.5, outcome: "Critical condition" },
-  
+// ---------------------------------------------------------------------------
+// Generate the dataset by sweeping a grid of feature values. Because we produce
+// BOTH weekend values (and several meeting counts) for every other combination,
+// the data contains pairs that are identical except for one feature yet have
+// different outcomes — which is what forces the tree to use those features.
+// ---------------------------------------------------------------------------
+function generateDataset(): TrainingRow[] {
+  const sleepValues = [3, 4.5, 6, 7.5];
+  const meetingsValues = [2, 6, 10];
+  const weekendsValues: ("Yes" | "No")[] = ["No", "Yes"];
+  const stressValues = [3, 5, 7, 9];
 
-];
+  const rows: TrainingRow[] = [];
+
+  for (const sleep of sleepValues) {
+    for (const meetings of meetingsValues) {
+      for (const weekends of weekendsValues) {
+        for (const stress of stressValues) {
+          const score = burnoutScore(sleep, meetings, weekends, stress);
+          rows.push({ sleep, meetings, weekends, stress, outcome: scoreToOutcome(score) });
+        }
+      }
+    }
+  }
+
+  return rows;
+}
+
+export const dataset: TrainingRow[] = generateDataset();
