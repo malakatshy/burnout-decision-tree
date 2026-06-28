@@ -174,8 +174,12 @@ function TreeVisualizer({ activePath }: TreeVisualizerProps) {
   if (loading) {
     return (
       <section className="tree-section">
-        <h2>Decision Tree Visualizer</h2>
-        <p>Loading tree...</p>
+        <div className="panel-tab">
+          <span className="tab-no">03</span>
+          <span className="tab-name">Under the hood</span>
+        </div>
+        <h2>Decision tree</h2>
+        <p className="tree-loading">Loading the model…</p>
       </section>
     );
   }
@@ -183,7 +187,11 @@ function TreeVisualizer({ activePath }: TreeVisualizerProps) {
   if (error) {
     return (
       <section className="tree-section">
-        <h2>Decision Tree Visualizer</h2>
+        <div className="panel-tab">
+          <span className="tab-no">03</span>
+          <span className="tab-name">Under the hood</span>
+        </div>
+        <h2>Decision tree</h2>
         <div className="error">{error}</div>
       </section>
     );
@@ -196,14 +204,16 @@ function TreeVisualizer({ activePath }: TreeVisualizerProps) {
   return (
     <section className="tree-section">
       <div className="tree-header">
-        <div>
-          <span className="section-label">Model logic</span>
-          <h2>Decision Tree Visualizer</h2>
-          <p>
-            Each decision node shows a condition. Leaf nodes are colored by
-            burnout risk. Hover over any node to see training statistics.
-          </p>
+        <div className="panel-tab">
+          <span className="tab-no">03</span>
+          <span className="tab-name">Under the hood</span>
         </div>
+        <h2>How the model decides</h2>
+        <p>
+          Every prediction is just a walk down this tree. Decision nodes test one
+          threshold; leaves are colored by burnout risk. After a reading, your
+          path lights up. Hover any node for its training stats.
+        </p>
       </div>
 
       <div className="tree-canvas">
