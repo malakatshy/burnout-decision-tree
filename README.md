@@ -8,9 +8,9 @@ The application receives developer work-life signals such as sleep, meetings, we
 
 ## Live Links
 
-- Frontend Deployment: TODO - add Vercel / Netlify / Cloudflare link
-- Backend Deployment: TODO - add Render / Railway / Fly.io link
-- GitHub Repository: TODO - add repository link
+- Frontend Deployment (Direct Link): https://burnout-decision-tree.vercel.app/
+- Backend Deployment:  https://burnout-decision-tree.onrender.com/api
+- GitHub Repository: https://github.com/malakatshy/burnout-decision-tree
 
 ---
 
@@ -235,6 +235,12 @@ Valid input ranges:
 | stress   | 1 to 10     |
 
 If invalid data is sent, the API returns a clear error message instead of crashing.
+
+The frontend limits user input through sliders and a checkbox, so users cannot normally enter values outside the allowed ranges.
+
+However, the backend also validates every prediction request. This is important because someone could still send invalid data manually through an API tool such as Postman, curl, or the browser console.
+
+If invalid data is sent, the backend returns a clear error message instead of crashing.
 
 Example error response:
 
