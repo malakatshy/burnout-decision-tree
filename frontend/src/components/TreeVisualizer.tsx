@@ -29,6 +29,7 @@ type BackendTreeNode =
 type D3TreeNode = {
   name: string;
   attributes: {
+    id: string;
     kind: "leaf" | "decision";
     prediction?: Outcome;
     samples: number;
@@ -61,16 +62,49 @@ function formatCondition(node: Extract<BackendTreeNode, { kind: "decision" }>) {
   return `${node.feature} = ${node.threshold}`;
 }
 
-function convertToD3Tree(node: BackendTreeNode, branch?: "Yes" | "No"): D3TreeNode {
+// function convertToD3Tree(node: BackendTreeNode, branch?: "Yes" | "No"): D3TreeNode {
+//   if (node.kind === "leaf") {
+//     return {
+//       name: node.prediction,
+//       attributes: {
+//         kind: "leaf",
+//         prediction: node.prediction,
+//         samples: node.samples,
+//         stats: formatStats(node),
+//         branch, 
+//       },
+//     };
+//   }
+
+//   return {
+//     name: formatCondition(node),
+//     attributes: {
+//       kind: "decision",
+//       samples: node.samples,
+//       stats: formatStats(node),
+//       branch,
+//     },
+//     children: [convertToD3Tree(node.left, "Yes"), convertToD3Tree(node.right, "No")],
+//   };
+// }
+
+
+
+function convertToD3Tree(
+  node: BackendTreeNode,
+  branch?: "Yes" | "No",
+  id: string = "root"
+): D3TreeNode {
   if (node.kind === "leaf") {
     return {
       name: node.prediction,
       attributes: {
+        id,
         kind: "leaf",
         prediction: node.prediction,
         samples: node.samples,
         stats: formatStats(node),
-        branch, 
+        branch,
       },
     };
   }
@@ -78,14 +112,22 @@ function convertToD3Tree(node: BackendTreeNode, branch?: "Yes" | "No"): D3TreeNo
   return {
     name: formatCondition(node),
     attributes: {
+      id,
       kind: "decision",
       samples: node.samples,
       stats: formatStats(node),
       branch,
     },
-    children: [convertToD3Tree(node.left, "Yes"), convertToD3Tree(node.right, "No")],
+    children: [
+      convertToD3Tree(node.left, "Yes", `${id}-yes`),
+      convertToD3Tree(node.right, "No", `${id}-no`),
+    ],
   };
 }
+
+
+
+
 
 function predictionClass(prediction?: Outcome) {
   if (!prediction) return "";
@@ -93,7 +135,11 @@ function predictionClass(prediction?: Outcome) {
   return prediction.toLowerCase().replaceAll(" ", "-");
 }
 
-function TreeVisualizer() {
+type TreeVisualizerProps = {
+  activePath: string[];
+};
+
+function TreeVisualizer({ activePath }: TreeVisualizerProps) {
   const [treeData, setTreeData] = useState<D3TreeNode | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -172,11 +218,18 @@ function TreeVisualizer() {
           collapsible
           zoomable
           draggable
+          pathClassFunc={(linkDatum: any) => {
+            const targetId = linkDatum.target.data.attributes?.id;
+            return activePath.includes(targetId) ? "active-link" : "";
+          }}
           renderCustomNodeElement={({ nodeDatum, toggleNode }) => {
             const kind = nodeDatum.attributes?.kind;
             const prediction = nodeDatum.attributes?.prediction as
               | Outcome
               | undefined;
+
+            const nodeId = String(nodeDatum.attributes?.id ?? "");
+            const isActive = activePath.includes(nodeId);
 
             return (
               <g>
@@ -185,7 +238,7 @@ function TreeVisualizer() {
                   <text
                     className={`branch-label ${String(
                       nodeDatum.attributes.branch
-                    ).toLowerCase()}`}
+                    ).toLowerCase()} ${isActive ? "active-branch" : ""}`}
                     x={0}
                     y={-66}
                     textAnchor="middle"
@@ -198,7 +251,7 @@ function TreeVisualizer() {
                   <div
                     className={`tree-node ${kind} ${predictionClass(
                       prediction
-                    )}`}
+                    )} ${isActive ? "active-path" : ""}`}
                     onMouseEnter={(e) =>
                       setHovered({
                         node: nodeDatum as unknown as D3TreeNode,

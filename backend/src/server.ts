@@ -2,7 +2,7 @@
 import express from "express";
 import cors from "cors";
 import { dataset } from "./dataset";
-import { buildTree, predict } from "./tree";
+import { buildTree, predictWithPath } from "./tree";
 import type { TreeNode } from "./types";
 
 const app = express();
@@ -60,8 +60,8 @@ app.post("/api/predict", (req, res) => {
     });
   }
 
-  const verdict = predict(tree, req.body);
-  res.json({ prediction: verdict });
+  const result = predictWithPath(tree, req.body);
+  res.json(result);
 });
 
 

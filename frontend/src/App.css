@@ -466,3 +466,25 @@ button:disabled {
   justify-content: space-between;
   gap: 16px;
 }
+
+.tree-node.active-path {
+  border-color: #4f46e5;
+  box-shadow:
+    0 0 0 4px rgba(79, 70, 229, 0.16),
+    0 18px 44px rgba(79, 70, 229, 0.25);
+  transform: translateY(-2px);
+}
+
+.tree-node.leaf.active-path {
+  border-width: 3px;
+}
+
+.rd3t-link.active-link {
+  stroke: #4f46e5 !important;
+  stroke-width: 4px !important;
+}
+
+.branch-label.active-branch {
+  font-size: 15px;
+  font-weight: 900;
+}

@@ -1,6 +1,7 @@
 
 import type { Outcome, TrainingRow, Sample, TreeNode } from "./types";
-import { dataset } from "./dataset";
+
+// import { dataset } from "./dataset";
 
 
 ////////////////////////////////////////////////////
@@ -201,12 +202,35 @@ export function predict(node: TreeNode, sample: Sample): Outcome {
 ///////////////////////////////////////////////////////////////////////
 
 
-const tree = buildTree(dataset);
 
-const sample: Sample = {
-  sleep: 5,
-  meetings: 9,
-  weekends: "Yes",
-  stress: 9,
-};
+// save the path
 
+export function predictWithPath(
+  node: TreeNode,
+  sample: Sample,
+  nodeId: string = "root"
+): { prediction: Outcome; path: string[] } {
+  if (node.kind === "leaf") {
+    return {
+      prediction: node.prediction,
+      path: [nodeId],
+    };
+  }
+
+  const value = sample[node.feature];
+
+  const goesLeft =
+    typeof value === "number"
+      ? value < (node.threshold as number)
+      : value === node.threshold;
+
+  const nextNode = goesLeft ? node.left : node.right;
+  const nextId = goesLeft ? `${nodeId}-yes` : `${nodeId}-no`;
+
+  const result = predictWithPath(nextNode, sample, nextId);
+
+  return {
+    prediction: result.prediction,
+    path: [nodeId, ...result.path],
+  };
+}

@@ -10,6 +10,7 @@ type Outcome =
 
 type PredictionResponse = {
   prediction: Outcome;
+  path: string[];
 };
 
 const API_URL = "http://localhost:3000/api";
@@ -24,10 +25,14 @@ function App() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [activePath, setActivePath] = useState<string[]>([]);
+
   async function handlePredict() {
     setLoading(true);
     setError("");
     setPrediction(null);
+    setActivePath([]);
+    
 
     try {
       const response = await fetch(`${API_URL}/predict`, {
@@ -52,6 +57,7 @@ function App() {
 
       const result = data as PredictionResponse;
       setPrediction(result.prediction);
+      setActivePath(result.path);
     } catch {
       setError("Could not connect to the backend server.");
     } finally {
@@ -153,7 +159,7 @@ function App() {
         {error && <div className="error">{error}</div>}
       </div>
     </section>
-    <TreeVisualizer />
+    <TreeVisualizer activePath={activePath} />
   </main>
 );
 }
