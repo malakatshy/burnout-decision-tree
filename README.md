@@ -1,5 +1,3 @@
-````bash
-cat > README.md <<'EOF'
 # Developer Burnout Decision Tree
 
 A full-stack web application for analyzing developer burnout risk using a manually implemented Decision Tree algorithm.
@@ -16,20 +14,6 @@ The application receives developer work-life signals such as sleep, meetings, we
 
 ---
 
-## Project Goal
-
-The goal of this project is to build a web application that predicts developer burnout levels using a Decision Tree classifier and explains the model logic visually.
-
-The system predicts one of four possible outcomes:
-
-- Healthy
-- Risk of burnout
-- Vacation required
-- Critical condition
-
-In addition to returning a prediction, the application displays the constructed decision tree so the user can understand which conditions led to the final result.
-
----
 
 ## Main Features
 
@@ -81,7 +65,6 @@ The visualizer includes:
 
 - Manually implemented CART-style Decision Tree
 - Gini Index as the splitting criterion
-- No machine learning libraries were used
 
 ---
 
@@ -128,47 +111,6 @@ Gain = Parent Gini - Weighted Child Gini
 
 ---
 
-## Numerical and Categorical Splits
-
-The dataset contains both numerical and categorical features.
-
-### Numerical Features
-
-Numerical features include:
-
-* sleep
-* meetings
-* stress
-
-For numerical values, the algorithm searches for the best threshold automatically.
-
-Example:
-
-```text
-sleep < 6
-stress < 7.5
-meetings < 5.5
-```
-
-The algorithm sorts the unique values and tries midpoint thresholds between neighboring values.
-
-### Categorical Feature
-
-The categorical feature is:
-
-```text
-weekends: Yes / No
-```
-
-For this feature, the tree uses a binary split:
-
-```text
-weekends = Yes
-```
-
-Rows that match the condition go to the left branch. Other rows go to the right branch.
-
----
 
 ## Dataset
 
@@ -326,52 +268,6 @@ burnout-decision-tree/
 └── README.md
 ```
 
----
-
-## How to Run Locally
-
-### 1. Clone the repository
-
-```bash
-git clone TODO_REPOSITORY_LINK
-cd burnout-decision-tree
-```
-
----
-
-### 2. Run the backend
-
-```bash
-cd backend
-npm install
-npx ts-node src/server.ts
-```
-
-The backend runs on:
-
-```text
-http://localhost:3000
-```
-
----
-
-### 3. Run the frontend
-
-Open another terminal:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-The frontend usually runs on:
-
-```text
-http://localhost:5173
-```
-
-or another Vite port shown in the terminal.
 
 ---
 
@@ -408,34 +304,9 @@ All generated code suggestions were reviewed, tested, modified, and integrated m
 
 ---
 
-## Notes About the Implementation
-
-This project intentionally focuses on clarity, explainability, and manual implementation rather than using a ready-made machine learning library.
-
-The decision tree is not built with Scikit-learn or any similar ML package. The algorithmic logic is implemented from scratch in TypeScript.
-
-The tree visualizer is used only for rendering the model structure. It does not perform the machine learning logic.
-
----
-
-## Future Improvements
-
-Possible future improvements include:
-
-* Supporting CSV upload for custom training datasets
-* Adding automatic prediction updates when sliders change
-* Adding train/test split evaluation
-* Displaying model accuracy on a validation set
-* Improving mobile layout for the tree visualizer
-* Adding more developer work-life features
-
----
 
 ## Author
 
 Created as part of a FullStack and AI assignment.
 
-EOF
 
-```
-```
