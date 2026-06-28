@@ -1,12 +1,14 @@
 
 
+
+// The possible outcomes of the decision tree.
 export type Outcome =
   | "Healthy"
   | "Risk of burnout"
   | "Vacation required"
   | "Critical condition";
 
-// status 
+// A sample is a set of features for one person.  The tree uses these to make a prediction.
 export type Sample = {
   sleep: number;            
   meetings: number;         

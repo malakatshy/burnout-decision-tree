@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Tree from "react-d3-tree";
 
+
+
 type Outcome =
   | "Healthy"
   | "Risk of burnout"
@@ -41,6 +43,7 @@ type D3TreeNode = {
 
 const API_URL = "http://localhost:3000/api";
 
+
 function formatDistribution(distribution: Distribution): string {
   return [
     `Healthy: ${distribution["Healthy"]}`,
@@ -62,34 +65,8 @@ function formatCondition(node: Extract<BackendTreeNode, { kind: "decision" }>) {
   return `${node.feature} = ${node.threshold}`;
 }
 
-// function convertToD3Tree(node: BackendTreeNode, branch?: "Yes" | "No"): D3TreeNode {
-//   if (node.kind === "leaf") {
-//     return {
-//       name: node.prediction,
-//       attributes: {
-//         kind: "leaf",
-//         prediction: node.prediction,
-//         samples: node.samples,
-//         stats: formatStats(node),
-//         branch, 
-//       },
-//     };
-//   }
 
-//   return {
-//     name: formatCondition(node),
-//     attributes: {
-//       kind: "decision",
-//       samples: node.samples,
-//       stats: formatStats(node),
-//       branch,
-//     },
-//     children: [convertToD3Tree(node.left, "Yes"), convertToD3Tree(node.right, "No")],
-//   };
-// }
-
-
-
+// Converts the backend tree structure to the format expected by react-d3-tree.
 function convertToD3Tree(
   node: BackendTreeNode,
   branch?: "Yes" | "No",
@@ -128,7 +105,7 @@ function convertToD3Tree(
 
 
 
-
+// Converts an outcome string to a CSS-friendly class name.
 function predictionClass(prediction?: Outcome) {
   if (!prediction) return "";
 

@@ -40,10 +40,12 @@ function outcomeKey(outcome: Outcome) {
   return outcome.toLowerCase().replaceAll(" ", "-");
 }
 
+
+// Converts an outcome string to a CSS-friendly class name.
 function App() {
   const [sleep, setSleep] = useState(7);
   const [meetings, setMeetings] = useState(4);
-  const [weekends, setWeekends] = useState(false);
+  const [weekends, setWeekends] = useState(false); 
   const [stress, setStress] = useState(5);
 
   const [prediction, setPrediction] = useState<Outcome | null>(null);

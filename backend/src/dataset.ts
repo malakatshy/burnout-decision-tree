@@ -1,13 +1,11 @@
 
 import type { TrainingRow, Outcome } from "./types";
 
-// ---------------------------------------------------------------------------
-// Burnout scoring rule.
-// Instead of hand-labeling rows, we define ONE transparent formula that
+
 // combines all four features into a single "burnout score". This guarantees
 // every feature genuinely affects the outcome, so the tree has a real reason
 // to split on each one — including weekends and meetings.
-// ---------------------------------------------------------------------------
+
 function burnoutScore(
   sleep: number,
   meetings: number,
@@ -22,6 +20,7 @@ function burnoutScore(
   return stressLoad + sleepDebt + meetingLoad + weekendPenalty;
 }
 
+
 // Maps a burnout score to one of the four outcomes.
 function scoreToOutcome(score: number): Outcome {
   if (score < 8) return "Healthy";
@@ -30,12 +29,7 @@ function scoreToOutcome(score: number): Outcome {
   return "Critical condition";
 }
 
-// ---------------------------------------------------------------------------
-// Generate the dataset by sweeping a grid of feature values. Because we produce
-// BOTH weekend values (and several meeting counts) for every other combination,
-// the data contains pairs that are identical except for one feature yet have
-// different outcomes — which is what forces the tree to use those features.
-// ---------------------------------------------------------------------------
+// Generate the dataset by sweeping a grid of feature values
 function generateDataset(): TrainingRow[] {
   const sleepValues = [3, 4.5, 6, 7.5];
   const meetingsValues = [2, 6, 10];

@@ -29,8 +29,6 @@ app.get("/api/tree", (req, res) => {
 });
 
 
-
-
 // validation function to check if the request body is a valid Sample object
 function isValidSample(body: any): boolean {
 
