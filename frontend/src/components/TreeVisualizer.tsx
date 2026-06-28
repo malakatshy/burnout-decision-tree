@@ -33,6 +33,7 @@ type D3TreeNode = {
     prediction?: Outcome;
     samples: number;
     stats: string;
+    branch?: "Yes" | "No";
   };
   children?: D3TreeNode[];
 };
@@ -60,7 +61,7 @@ function formatCondition(node: Extract<BackendTreeNode, { kind: "decision" }>) {
   return `${node.feature} = ${node.threshold}`;
 }
 
-function convertToD3Tree(node: BackendTreeNode): D3TreeNode {
+function convertToD3Tree(node: BackendTreeNode, branch?: "Yes" | "No"): D3TreeNode {
   if (node.kind === "leaf") {
     return {
       name: node.prediction,
@@ -69,6 +70,7 @@ function convertToD3Tree(node: BackendTreeNode): D3TreeNode {
         prediction: node.prediction,
         samples: node.samples,
         stats: formatStats(node),
+        branch, 
       },
     };
   }
@@ -79,8 +81,9 @@ function convertToD3Tree(node: BackendTreeNode): D3TreeNode {
       kind: "decision",
       samples: node.samples,
       stats: formatStats(node),
+      branch,
     },
-    children: [convertToD3Tree(node.left), convertToD3Tree(node.right)],
+    children: [convertToD3Tree(node.left, "Yes"), convertToD3Tree(node.right, "No")],
   };
 }
 
@@ -172,6 +175,20 @@ function TreeVisualizer() {
 
             return (
               <g>
+
+                {nodeDatum.attributes?.branch && (
+                  <text
+                    className={`branch-label ${String(
+                      nodeDatum.attributes.branch
+                    ).toLowerCase()}`}
+                    x={0}
+                    y={-66}
+                    textAnchor="middle"
+                  >
+                    {nodeDatum.attributes.branch}
+                  </text>
+                )}
+                
                 <foreignObject width={180} height={112} x={-90} y={-56}>
                   <div
                     className={`tree-node ${kind} ${predictionClass(

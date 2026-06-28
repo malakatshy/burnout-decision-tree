@@ -416,3 +416,20 @@ button:disabled {
     height: 560px;
   }
 }
+
+.branch-label {
+  font-size: 13px;
+  font-weight: 800;
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.branch-label.yes {
+  fill: #16a34a;
+}
+
+.branch-label.no {
+  fill: #dc2626;
+}
