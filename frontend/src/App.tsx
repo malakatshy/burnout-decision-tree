@@ -13,7 +13,7 @@ type PredictionResponse = {
   path: string[];
 };
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
 const OUTCOME_ORDER: Outcome[] = [
   "Healthy",
