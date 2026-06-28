@@ -6,7 +6,7 @@ import { buildTree, predictWithPath } from "./tree";
 import type { TreeNode } from "./types";
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());          // lets the frontend (a different origin) call this API
 app.use(express.json());  // lets us read JSON sent in a request body
