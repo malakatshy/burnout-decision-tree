@@ -433,3 +433,36 @@ button:disabled {
 .branch-label.no {
   fill: #dc2626;
 }
+
+.tree-tooltip {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  min-width: 180px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #0f172a;
+  color: #e2e8f0;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.35);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.tooltip-title {
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.tooltip-samples {
+  color: #94a3b8;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.tooltip-dist div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}

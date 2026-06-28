@@ -97,6 +97,11 @@ function TreeVisualizer() {
   const [treeData, setTreeData] = useState<D3TreeNode | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [hovered, setHovered] = useState<{
+    node: D3TreeNode;
+    x: number;
+    y: number;
+  } | null>(null);
 
   useEffect(() => {
     async function loadTree() {
@@ -188,13 +193,20 @@ function TreeVisualizer() {
                     {nodeDatum.attributes.branch}
                   </text>
                 )}
-                
+
                 <foreignObject width={180} height={112} x={-90} y={-56}>
                   <div
                     className={`tree-node ${kind} ${predictionClass(
                       prediction
                     )}`}
-                    title={String(nodeDatum.attributes?.stats)}
+                    onMouseEnter={(e) =>
+                      setHovered({
+                        node: nodeDatum as unknown as D3TreeNode,
+                        x: e.clientX,
+                        y: e.clientY,
+                      })
+                    }
+                    onMouseLeave={() => setHovered(null)}
                     onClick={toggleNode}
                   >
                     <span className="node-type">
@@ -211,6 +223,31 @@ function TreeVisualizer() {
           }}
         />
       </div>
+
+      {hovered && (
+        <div
+          className="tree-tooltip"
+          style={{ left: hovered.x + 14, top: hovered.y + 14 }}
+        >
+          <div className="tooltip-title">
+            {hovered.node.attributes?.kind === "leaf"
+              ? hovered.node.attributes?.prediction
+              : hovered.node.name}
+          </div>
+          <div className="tooltip-samples">
+            {hovered.node.attributes?.samples} training samples
+          </div>
+          <div className="tooltip-dist">
+            {hovered.node.attributes?.stats
+              .split("\n")
+              .slice(1)
+              .map((line) => (
+                <div key={line}>{line}</div>
+              ))}
+          </div>
+        </div>
+      )}
+
     </section>
   );
 }
