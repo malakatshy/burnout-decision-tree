@@ -161,7 +161,7 @@ export function buildTree(rows: TrainingRow[], depth: number = 0): TreeNode {
   const split = findBestSplit(rows);
 
   // Safety: if no useful split exists, fall back to a leaf.
-  if (split === null || split.gain === 0) {
+  if (split === null || split.gain <= 0) {
     return { kind: "leaf", prediction: majorityOutcome(rows), samples, distribution };
   }
 
