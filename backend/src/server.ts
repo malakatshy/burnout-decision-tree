@@ -33,6 +33,11 @@ app.get("/api/tree", (req, res) => {
 
 // validation function to check if the request body is a valid Sample object
 function isValidSample(body: any): boolean {
+
+  if (!body || typeof body !== "object") {
+    return false;
+  }
+  
   return (
     typeof body.sleep === "number" &&
     body.sleep >= 0 &&
